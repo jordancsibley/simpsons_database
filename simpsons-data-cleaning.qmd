@@ -1,0 +1,122 @@
+---
+title: "Simpsons database cleaning"
+format: html
+---
+
+## Set up
+
+```{r}
+# Load libraries 
+library(tidyverse)
+library(here)
+
+# Load data 
+characters <- read_csv(here("data", "simpsons_characters.csv")) 
+episodes <- read_csv(here("data","simpsons_episodes.csv"))
+locations <- read_csv(here("data", "simpsons_locations.csv"))
+script_lines <- read_csv(here("data", "simpsons_script_lines.csv"))
+```
+
+## Data Exploration
+
+### Characters
+
+```{r}
+glimpse(characters)
+
+summary(characters)
+
+print(colSums(is.na(characters)))
+```
+
+Rows: 6,722 Columns: 4
+
+-   `id`: <dbl> datatype, character id
+-   `name`: <chr>, name of character
+-   `normailzed_name`: <chr>, name of character in all lower case
+-   `gender`: <chr>, gender of the character
+
+### Episodes
+
+```{r}
+glimpse(episodes)
+
+summary(episodes)
+
+print(colSums(is.na(episodes)))
+```
+
+Rows: 151 Columns: 14
+
+-   `id`: <dbl>, episode id
+-   `image_url`: <chr>, image url, none of links seem to be working
+-   `imbd_rating`: <dbl>, episode rating from IMBD
+-   `imbd_votes`: <dbl>, total number of ratings from IMBD
+-   `number_in_season`: <dbl>, episode number of the particular season
+-   `number_in_series`: <dbl>, episode number in series
+-   `original_air_date`: <date>, date of airing
+-   `original_air_year`: <dbl>, year of airing
+-   `production_code`: <chr>, code for production
+-   `season`: <dbl>, season number
+-   `title`: <chr>, title of episode in quotes
+-   `us_viewers_in_millions`: <dbl>, number of US viewers in millions
+-   `video_url`: <chr>, URL for episode on Disney Plus
+-   `view`: <dbl>, unknown what these views are referencing
+
+### Locations
+
+```{r}
+glimpse(locations)
+
+summary(locations)
+
+print(colSums(is.na(locations)))
+```
+
+Rows: 4,459 Columns: 3
+
+-   `id`: <dbl>, location id number
+-   `name`: <chr>, location full name
+-   `normalized_name`: <chr>, location full name, lowercase
+
+### Script lines
+
+```{r}
+glimpse(script_lines)
+
+summary(script_lines)
+
+print(colSums(is.na(script_lines)))
+```
+
+Rows: 31,793 Columns: 13
+
+-   `id`: <dbl>, script line id
+-   `episode_id`: <dbl>, episode id (see `episodes` df)
+-   `number`: <dbl>, Need to check metadata
+-   `raw_text`: <chr>, raw text of script line
+-   `timestamp_in_ms`: <dbl>, timestamp of line in episode in milliseconds
+-   `speaking_line`: <lgl>, TRUE or FALSE, TRUE = Spoken line, FALSE = unspoken script line
+-   `character_id`: <dbl>, id of character (see `characters` df)
+-   `location_id`: <dbl>, id of location (see `locations` df)
+-   `raw_character_text`: <chr>, name of speaker as shown on script (need to check if this matches `characters$name`)
+-   `raw_location_text`: <chr>, name of location where script line was said
+-   `spoken_words`: <chr>, text of spoken script line, only applies when `speaking_line` = TRUE
+-   `normalized_text`: <chr>, lowercase text of spoken script line, only applies when `speaking_line` = TRUE
+-   `word_count`: <dbl>, number of words in spoken script line, only applies when `speaking_line` = TRUE
+
+## Data cleaning 
+
+- For `characters` data frame, I want to recode the `gender` column so that it reads "Female", "Male", or "Unknown"
+
+
+```{r}
+# Recode gender 
+characters <- characters |> 
+  mutate(gender = fct_explicit_na(gender, na_level = "Unknown"),
+         gender = fct_recode(gender, Male = "m", Female = "f"))
+
+# Write cleaned character dataset to csv file 
+write.csv(characters, here("data", "characters_clean.csv"), row.names=FALSE)
+```
+
