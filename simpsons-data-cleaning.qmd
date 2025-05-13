@@ -29,12 +29,22 @@ summary(characters)
 print(colSums(is.na(characters)))
 ```
 
+
 Rows: 6,722 Columns: 4
 
 -   `id`: <dbl> datatype, character id
 -   `name`: <chr>, name of character
 -   `normailzed_name`: <chr>, name of character in all lower case
 -   `gender`: <chr>, gender of the character
+
+```{r}
+# Check for duplicates of `id`, which will act as primary key of this table
+characters |> 
+  count(id) |> 
+  filter(n > 1)
+```
+
+
 
 ### Episodes
 
@@ -63,6 +73,13 @@ Rows: 151 Columns: 14
 -   `video_url`: <chr>, URL for episode on Disney Plus
 -   `view`: <dbl>, unknown what these views are referencing
 
+```{r}
+# Check for duplicates of `id`, which will act as primary key of this table
+episodes |> 
+  count(id) |> 
+  filter(n > 1)
+```
+
 ### Locations
 
 ```{r}
@@ -79,6 +96,13 @@ Rows: 4,459 Columns: 3
 -   `name`: <chr>, location full name
 -   `normalized_name`: <chr>, location full name, lowercase
 
+```{r}
+# Check for duplicates of `id`, which will act as primary key of this table
+locations |> 
+  count(id) |> 
+  filter(n > 1)
+```
+
 ### Script lines
 
 ```{r}
@@ -93,7 +117,7 @@ Rows: 31,793 Columns: 13
 
 -   `id`: <dbl>, script line id
 -   `episode_id`: <dbl>, episode id (see `episodes` df)
--   `number`: <dbl>, Need to check metadata
+-   `number`: <dbl>, like an index, order of `id`
 -   `raw_text`: <chr>, raw text of script line
 -   `timestamp_in_ms`: <dbl>, timestamp of line in episode in milliseconds
 -   `speaking_line`: <lgl>, TRUE or FALSE, TRUE = Spoken line, FALSE = unspoken script line
@@ -105,18 +129,88 @@ Rows: 31,793 Columns: 13
 -   `normalized_text`: <chr>, lowercase text of spoken script line, only applies when `speaking_line` = TRUE
 -   `word_count`: <dbl>, number of words in spoken script line, only applies when `speaking_line` = TRUE
 
+```{r}
+# Check for duplicates of `id`, which will act as primary key of this table
+script_lines |> 
+  count(id) |> 
+  filter(n > 1)
+```
+
 ## Data cleaning 
 
-- For `characters` data frame, I want to recode the `gender` column so that it reads "Female", "Male", or "Unknown"
+#### characters dataset 
 
+- Need to make sure id is in integer form
+- For `characters` data frame, I want to recode the `gender` column so that it reads "Female", "Male", or "Unknown"
+- Reorder rows to order by id
 
 ```{r}
-# Recode gender 
+# Convert datatypes to integer, recode gender column, and arrange by id 
 characters <- characters |> 
-  mutate(gender = fct_explicit_na(gender, na_level = "Unknown"),
-         gender = fct_recode(gender, Male = "m", Female = "f"))
+  mutate(id = as.integer(id)) |> 
+  mutate(gender = fct_na_value_to_level(gender, level = "Unknown"),
+         gender = fct_recode(gender, Male = "m", Female = "f")) |> 
+  mutate(gender = as.character(gender)) |> # convert to chr datatype
+  arrange(id)
 
 # Write cleaned character dataset to csv file 
 write.csv(characters, here("data", "characters_clean.csv"), row.names=FALSE)
+```
+
+
+#### episodes dataset 
+
+- leave 'imdb_rating' and 'us_viewers_in_millions' as type numeric as they will be float i n the database, and the rest of the numeric columns will be explicitly converted to integer
+- order by id
+
+```{r}
+# Convert datatypes to integer and arrange by id
+episodes <- episodes |> 
+  mutate(id = as.integer(id),
+         imdb_votes = as.integer(imdb_votes),
+         number_in_season = as.integer(number_in_season),
+         number_in_series = as.integer(number_in_series),
+         original_air_year = as.integer(original_air_year),
+         season = as.integer(season),
+         views = as.integer(views)) |> 
+  arrange(id)
+
+# Write cleaned character dataset to csv file 
+write.csv(episodes, here("data", "episodes_clean.csv"), row.names=FALSE)
+```
+
+#### locations dataset 
+
+- Need to make sure id is in integer form
+- arrange by id
+
+```{r}
+# Convert id datatype to integer and arrange by id
+locations <- locations |> 
+  mutate(id = as.integer(id)) |> 
+  arrange(id)
+
+# Write cleaned character dataset to csv file 
+write.csv(locations, here("data", "locations_clean.csv"), row.names=FALSE)
+```
+
+
+#### script_lines dataset 
+
+- Convert to interger: id, episode_id, number, timestamp_in_ms, character_id, location_id, word_count
+- arrange by id
+
+```{r}
+script_lines <- script_lines |> 
+  mutate(id = as.integer(id),
+         episode_id = as.integer(episode_id),
+         number = as.integer(number),
+         timestamp_in_ms = as.integer(timestamp_in_ms),
+         character_id = as.integer(character_id),
+         location_id = as.integer(location_id),
+         word_count = as.integer(word_count)) |> 
+  arrange(id)
+# Write cleaned character dataset to csv file 
+write.csv(script_lines, here("data", "script_lines_clean.csv"), row.names=FALSE)
 ```
 
