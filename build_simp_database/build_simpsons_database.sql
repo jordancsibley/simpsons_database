@@ -78,4 +78,3 @@ CREATE TABLE script_lines (
 INSERT INTO script_lines
 SELECT id, episode_id, number, raw_text, timestamp_in_ms, speaking_line, character_id, location_id, raw_character_text, raw_location_text, spoken_words, normalized_text, word_count
 FROM read_csv_auto('/Users/jordansibley/Desktop/MEDS/EDS_213/section_database_proj/simpsons_database/data/script_lines_clean.csv', HEADER=TRUE, SAMPLE_SIZE=-1, NULLSTR = 'NA');
-
