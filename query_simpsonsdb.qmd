@@ -13,3 +13,102 @@ format:
 embed-resources: true
 ---
 
+## Overview 
+
+description of what this doc does 
+
+
+## Database query question 
+
+Using the Simpsons database, I aim to answer the question which characters have the most total words spoken and also explore which genders are represented in the top 12?
+
+
+
+## Connect to database 
+
+```{r}
+# Read in libraries 
+library(tidyverse)
+library(DBI)
+library(duckdb)
+library(dbplyr)
+```
+
+```{r}
+# Connect to simpsons database 
+conn <- DBI::dbConnect(duckdb::duckdb(),
+                       dbdir="build_simp_database/simpsons.db")
+```
+
+## Query database 
+
+Here is the query to get the data I need to create the plot to answer my question: 
+
+```{sql}
+SELECT characters.name, characters.gender, SUM(script_lines.word_count) AS total_word_count 
+  FROM script_lines
+  LEFT JOIN characters 
+    ON script_lines.character_id = characters.id
+  WHERE script_lines.speaking_line = TRUE
+  GROUP BY characters.name, characters.gender
+  ORDER BY total_word_count DESC
+  LIMIT 12;
+```
+
+```{r}
+# Query database using DBI connection 
+top_lines_query <- dbGetQuery(conn, "SELECT characters.name, characters.gender, SUM(script_lines.word_count) AS total_word_count 
+  FROM script_lines
+  LEFT JOIN characters 
+    ON script_lines.character_id = characters.id
+  WHERE script_lines.speaking_line = TRUE
+  GROUP BY characters.name, characters.gender
+  ORDER BY total_word_count DESC
+  LIMIT 12;")
+```
+
+
+## Workflow in R tidyverse syntax 
+
+You can also query a database in R using `dbplyr` which works with tidyverse syntax 
+
+```{r}
+# Collect characters and script_lines tables from database in table form 
+script_lines <- tbl(conn, "script_lines")
+characters <- tbl(conn, "characters")
+
+# Left join of script_lines and characters by character_id
+script_chars <- left_join(script_lines, characters, join_by(character_id == id), keep = FALSE) |> 
+  collect() 
+  
+# Determine which characters have the most speaking words 
+top_lines <- script_chars |> 
+  # Filter to only spoken lines 
+  filter(speaking_line == TRUE) |> 
+  # Group by name 
+  group_by(name, gender) |> 
+  # calculate total spoken words
+  summarise(total_word_count = sum(word_count, na.rm = TRUE)) |> 
+  # arrange by descending total_word_count and only keep top 12
+  arrange(desc(total_word_count)) |> 
+  head(12)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Close the database connection 
+
+```{r}
+DBI::dbDisconnect(conn, shutdown = TRUE)
+```
+
