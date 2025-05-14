@@ -13,18 +13,27 @@ This repository holds the code used to create a database from 4 different datase
 simpsons_database
 |
 ├── data/
-|     ├── characters_clean.csv    # characters table that has gender column recoded
+|     ├── characters_clean.csv    # cleaned characters table
+|     ├── episodes_clean.csv    # cleaned episode table
+|     ├── characters_locations.csv    # cleaned locations table
+|     ├── script_lines_clean.csv    # cleaned characters table 
 |     ├── simpsons_characters.csv   # raw character data
 |     ├── simpsons_episodes.csv   # raw episodes data
 |     ├── simpsons_locations.csv   # raw locations data
-|     └── simpsons_script_lines.csv   # raw script lines data 
+|     └── simpsons_script_lines.csv   # raw script lines data
+|
+├── build_simp_database/
+|     ├── build_simpsons_database.sql   # script used to assemble database
+|     └── simpsons.db   # database with 4 tables (characters, locations, episodes, script_lines) 
 |
 ├── images/
 |      └── simpsons_database.png   # database schema for README.md
 |
 ├── readin_simp_data.R    # script used to read in and download the 4 simpsons datasets
 |
-├── simpsons-data-cleaning.qmd   # script used for inital data exploration and cleaning of characters table
+├── simpsons-data-cleaning.qmd   # script used for data exploration and cleaning of tables
+|
+├── query_simpsonsdb.qmd  # script used for querying database to create data viz
 |
 ├── simpsons_database.Rproj   # R project 
 |
