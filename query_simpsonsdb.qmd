@@ -20,7 +20,7 @@ description of what this doc does
 
 ## Database query question 
 
-Using the Simpsons database, I aim to answer the question which characters have the most total words spoken and also explore which genders are represented in the top 12?
+Using the Simpsons database, I aim to answer the question: which characters have spoken the most total words, and what genders are represented among the top 12?
 
 
 
@@ -29,9 +29,11 @@ Using the Simpsons database, I aim to answer the question which characters have 
 ```{r}
 # Read in libraries 
 library(tidyverse)
+library(here)
 library(DBI)
 library(duckdb)
 library(dbplyr)
+library(showtext) 
 ```
 
 ```{r}
@@ -68,32 +70,75 @@ top_lines_query <- dbGetQuery(conn, "SELECT characters.name, characters.gender, 
 ```
 
 
-## Workflow in R tidyverse syntax 
+## Data Visualization 
 
-You can also query a database in R using `dbplyr` which works with tidyverse syntax 
-
+font source: https://www.dafont.com/simpsonfont.font
 ```{r}
-# Collect characters and script_lines tables from database in table form 
-script_lines <- tbl(conn, "script_lines")
-characters <- tbl(conn, "characters")
-
-# Left join of script_lines and characters by character_id
-script_chars <- left_join(script_lines, characters, join_by(character_id == id), keep = FALSE) |> 
-  collect() 
-  
-# Determine which characters have the most speaking words 
-top_lines <- script_chars |> 
-  # Filter to only spoken lines 
-  filter(speaking_line == TRUE) |> 
-  # Group by name 
-  group_by(name, gender) |> 
-  # calculate total spoken words
-  summarise(total_word_count = sum(word_count, na.rm = TRUE)) |> 
-  # arrange by descending total_word_count and only keep top 12
-  arrange(desc(total_word_count)) |> 
-  head(12)
+# Import simpsons font 
+font_add(family = "Simpsonfont", regular = here('fonts', 'Simpsonfont.otf'))
+showtext_auto()
 ```
 
+
+```{r}
+# Create lollipop chart to visualize chars with top spoken words 
+top_lines_query |> 
+  # factor order by name to maintain descending order of characters
+  arrange(total_word_count) |>   
+  mutate(name=factor(name, levels=name)) |> 
+  # initialize ggplot 
+ggplot( aes(x = name, y = total_word_count, color = gender)) + 
+  # geoms for lollipop chart 
+  geom_segment(aes(xend = name, yend=0)) + 
+  geom_point(size = 6) + 
+  # flip x y coords  
+  coord_flip(clip = "off") + 
+  # axis labels 
+  labs(y = "Total words spoken") + 
+  # custom colors for gender 
+  scale_color_manual(values = c("Female" = "#DD6641", "Male" = "#357ABD")) + 
+  
+  # manually write character labels to include black text border 
+  shadowtext::geom_shadowtext(
+    aes(x = name, y = -max(total_word_count) * 0.05, label = name),  # slightly off the axis
+    inherit.aes = FALSE, family = "Simpsonfont",
+    size = 5,
+    color = "#FCEB56", # inner font color
+    bg.color = "#211E1F", # outline color
+    bg.r = 0.1, # outline thickness
+    hjust = 1
+  ) +
+  
+  # theme elements 
+  theme_minimal() + 
+  theme(
+    # remove y axis title & legend 
+    axis.title.y = element_blank(),
+    legend.position = "none",
+   
+    # Text elements 
+    # hide default y labels
+    axis.text.y = element_blank(),  
+    # x axis title and text  
+    axis.title.x = element_text(family = "Simpsonfont", size = 15, color = "#211E1F"),
+    axis.text.x = element_text(family = "Simpsonfont", size = 12, color = "#211E1F"),
+
+    # fix margins 
+    plot.margin = margin(t = 10, r = 10, b = 10, l = 130), 
+    # panel background color 
+    plot.background = element_rect(fill = "#F1C8CD")
+  )
+  
+  
+  
+
+```
+
+to do: 
+add commas to x axis 
+adjust x axis limits 
+add title and subtitle (include number of episodes this spans ) 
+fix colors of grids 
 
 
 
