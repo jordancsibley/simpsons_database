@@ -6,43 +6,12 @@
 
 This repository holds the code used to create a database from 4 different datasets that contain the characters, locations, episode details, and script lines for approximately 600 episodes of The Simpsons. Additionally, it contains files used to query the database and create a data visualization to answer the question: **which characters have spoken the most total words, and what genders are represented among the top 12?**
 
-## Repository Structure 
+## Data Visualization 
+![](images/simpsons-gender-plot.png)
+*Lollipop chart of the top 12 twelve Simpsons' characters with spoken words over the course of 118 episodes* 
 
-```
-simpsons_database
-|
-├── data/
-|     ├── characters_clean.csv    # cleaned characters table
-|     ├── episodes_clean.csv    # cleaned episode table
-|     ├── characters_locations.csv    # cleaned locations table
-|     ├── script_lines_clean.csv    # cleaned characters table 
-|     ├── simpsons_characters.csv   # raw character data
-|     ├── simpsons_episodes.csv   # raw episodes data
-|     ├── simpsons_locations.csv   # raw locations data
-|     └── simpsons_script_lines.csv   # raw script lines data
-|
-├── build_simp_database/
-|     ├── build_simpsons_database.sql   # script used to assemble database
-|     └── simpsons.db   # database with 4 tables (characters, locations, episodes, script_lines) 
-|
-├── images/
-|      └── simpsons_database.png   # database schema for README.md
-|
-├── readin_simp_data.R    # script used to read in and download the 4 simpsons datasets
-|
-├── simpsons-data-cleaning.qmd   # script used for data exploration and cleaning of tables
-|
-├── query_simpsonsdb.qmd  # script used for querying database to create data viz
-|
-├── environment_dependencies  #  R version, operating system, & packages used 
-|
-├── simpsons_database.Rproj   # R project 
-|
-├── README.md 
-|
-└── .gitignore     
+The code used in creating this plot is located within the [query_simpsonsdb.qmd](https://github.com/jordancsibley/simpsons_database/blob/main/query_simpsonsdb.qmd) file located in this repository. It was created using `ggplot` and utilized the packages `tidyverse`, `showtext`, `ggtext`, and `scales`. The Simpsons' style font used in this plot was found on [wwww.dafont.com](https://www.dafont.com/simpsonfont.font) and was created by Dennis Ludlow. 
 
-```
 
 ## Database Schema 
 
@@ -78,6 +47,53 @@ simpsons_script_lines <- readr::read_csv('https://raw.githubusercontent.com/rfor
 
 ```
 The code to read in this data is also located in the [readin_simp_data.R](https://github.com/jordancsibley/simpsons_database/blob/main/readin_simp_data.R) file. 
+
+## Repository Structure 
+
+```
+simpsons_database
+|
+├── build_simp_database/
+|     ├── build_simpsons_database.sql   # script used to assemble database
+|     └── simpsons.db   # database with 4 tables (characters, locations, episodes, script_lines)
+|
+├── data/
+|     ├── characters_clean.csv    # cleaned characters table
+|     ├── episodes_clean.csv    # cleaned episode table
+|     ├── characters_locations.csv    # cleaned locations table
+|     ├── script_lines_clean.csv    # cleaned characters table 
+|     ├── simpsons_characters.csv   # raw character data
+|     ├── simpsons_episodes.csv   # raw episodes data
+|     ├── simpsons_locations.csv   # raw locations data
+|     └── simpsons_script_lines.csv   # raw script lines data
+|
+├── fonts/
+|     └── Simpsonfont.otf  # font used in data viz
+|
+├── images/
+|     ├── simpsons-gender-plot.png  # dataviz found on README.md
+|     └── simpsons_database.png   # database schema for README.md
+|
+├── plots/
+|     └── simpsons_plot.pdf  # output of saved data viz 
+|
+├── .gitignore    
+|
+├── README.md
+|
+├── environment_dependencies  #  R version, operating system, & packages used
+|
+├── query_simpsonsdb.html  # html of qmd used for query & plot
+|
+├── query_simpsonsdb.qmd  # script used for querying database to create data viz
+| 
+├── readin_simp_data.R    # script used to read in and download the 4 simpsons datasets
+|
+├── simpsons-data-cleaning.qmd   # script used for data exploration and cleaning of tables
+|
+└── simpsons_database.Rproj   # R project 
+
+```
 
 ## Project Dependencies & Environment
 
