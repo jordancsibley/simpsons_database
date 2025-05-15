@@ -12,15 +12,9 @@ format:
 embed-resources: true
 ---
 
-## Overview 
-
-description of what this doc does 
-
-
 ## Database query question 
 
 Using the Simpsons database, I aim to answer the question: which characters have spoken the most total words, and what genders are represented among the top 12?
-
 
 
 ## Connect to database 
