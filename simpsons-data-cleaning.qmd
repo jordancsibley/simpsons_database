@@ -154,7 +154,7 @@ characters <- characters |>
   arrange(id)
 
 # Write cleaned character dataset to csv file 
-write.csv(characters, here("data", "characters_clean.csv"), row.names=FALSE)
+#write.csv(characters, here("data", "characters_clean.csv"), row.names=FALSE)
 ```
 
 
@@ -176,7 +176,7 @@ episodes <- episodes |>
   arrange(id)
 
 # Write cleaned character dataset to csv file 
-write.csv(episodes, here("data", "episodes_clean.csv"), row.names=FALSE)
+#write.csv(episodes, here("data", "episodes_clean.csv"), row.names=FALSE)
 ```
 
 #### locations dataset 
@@ -191,7 +191,7 @@ locations <- locations |>
   arrange(id)
 
 # Write cleaned character dataset to csv file 
-write.csv(locations, here("data", "locations_clean.csv"), row.names=FALSE)
+#write.csv(locations, here("data", "locations_clean.csv"), row.names=FALSE)
 ```
 
 
@@ -211,6 +211,6 @@ script_lines <- script_lines |>
          word_count = as.integer(word_count)) |> 
   arrange(id)
 # Write cleaned character dataset to csv file 
-write.csv(script_lines, here("data", "script_lines_clean.csv"), row.names=FALSE)
+#write.csv(script_lines, here("data", "script_lines_clean.csv"), row.names=FALSE)
 ```
 
