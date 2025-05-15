@@ -1,7 +1,6 @@
 ---
 title: "Querying and plotting using the simpsons database"
 author: "Jordan Sibley"
-author: "Jordan Sibley and Elizabeth Peterson"
 date: "2025-05-10"
 execute: 
   eval: true
@@ -34,6 +33,8 @@ library(DBI)
 library(duckdb)
 library(dbplyr)
 library(showtext) 
+library(ggtext)
+library(scales)
 ```
 
 ```{r}
@@ -46,7 +47,7 @@ conn <- DBI::dbConnect(duckdb::duckdb(),
 
 Here is the query to get the data I need to create the plot to answer my question: 
 
-```{sql}
+```
 SELECT characters.name, characters.gender, SUM(script_lines.word_count) AS total_word_count 
   FROM script_lines
   LEFT JOIN characters 
@@ -77,6 +78,8 @@ font source: https://www.dafont.com/simpsonfont.font
 # Import simpsons font 
 font_add(family = "Simpsonfont", regular = here('fonts', 'Simpsonfont.otf'))
 showtext_auto()
+
+font_add_google(name = "Chewy", family = "Chewy")
 ```
 
 
@@ -89,14 +92,19 @@ top_lines_query |>
   # initialize ggplot 
 ggplot( aes(x = name, y = total_word_count, color = gender)) + 
   # geoms for lollipop chart 
-  geom_segment(aes(xend = name, yend=0)) + 
+  geom_segment(aes(xend = name, yend=0), linewidth = 1.3) + 
   geom_point(size = 6) + 
   # flip x y coords  
   coord_flip(clip = "off") + 
   # axis labels 
-  labs(y = "Total words spoken") + 
+  labs(y = "Number of words spoken", 
+       title = "Where Are the Women? The Simpsons' Speaking Roles Tell a Story of Gender Imbalance",
+       subtitle = "Across 118 episodes (Seasons 21–26), <span style='color:#357ABD;'>male</span> characters dominate the top speakers list, <br>while Marge and Lisa are the only <span style='color:#DD6641;'>female</span> characters represented."
+) + 
   # custom colors for gender 
   scale_color_manual(values = c("Female" = "#DD6641", "Male" = "#357ABD")) + 
+  scale_y_continuous(breaks = seq(0, max(top_lines_query$total_word_count), by = 10000), 
+                     labels = scales::comma) +
   
   # manually write character labels to include black text border 
   shadowtext::geom_shadowtext(
@@ -120,35 +128,26 @@ ggplot( aes(x = name, y = total_word_count, color = gender)) +
     # hide default y labels
     axis.text.y = element_blank(),  
     # x axis title and text  
-    axis.title.x = element_text(family = "Simpsonfont", size = 15, color = "#211E1F"),
-    axis.text.x = element_text(family = "Simpsonfont", size = 12, color = "#211E1F"),
-
+    axis.title.x = element_text(family = "Simpsonfont", size = 13, color = "#211E1F"),
+    axis.text.x = element_text(family = "Chewy", size = 12, color = "#211E1F"),
+    plot.title = element_text(family = "Chewy", size = 17.5, color = "#211E1F", hjust = 0.4), 
+    plot.subtitle = element_markdown(family = "Chewy", size = 12, color = "#211E1F", hjust = 0.5),
+    
+    # grid lines 
+    panel.grid.major = element_line(color = "#A9606C"),
+    # remove minor grid lines 
+    panel.grid.minor = element_blank(),
+    
     # fix margins 
-    plot.margin = margin(t = 10, r = 10, b = 10, l = 130), 
+    plot.margin = margin(t = 10, r = 20, b = 10, l = 135), 
     # panel background color 
     plot.background = element_rect(fill = "#F1C8CD")
   )
   
   
   
-
+ggsave("plots/simpsons_plot.pdf", width = 10, height = 6)
 ```
-
-to do: 
-add commas to x axis 
-adjust x axis limits 
-add title and subtitle (include number of episodes this spans ) 
-fix colors of grids 
-
-
-
-
-
-
-
-
-
-
 
 
 ### Close the database connection 
