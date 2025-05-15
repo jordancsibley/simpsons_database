@@ -29,6 +29,7 @@ library(dbplyr)
 library(showtext) 
 library(ggtext)
 library(scales)
+library(shadowtext)
 ```
 
 ```{r}
