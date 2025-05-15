@@ -1,11 +1,10 @@
 # The Simpsons Database
 
-### Environmental Data Science 213 Spring 2025 
-![The Simpsons - Source: theverge.com](https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/13079153/the-simpsons-tv-series-cast-wallpaper-109911.0.0.1444767471.jpeg?quality=90&strip=all&crop=7.8125%2C0%2C84.375%2C100&w=2400) 
+![](https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/13079153/the-simpsons-tv-series-cast-wallpaper-109911.0.0.1444767471.jpeg?quality=90&strip=all&crop=7.8125%2C0%2C84.375%2C100&w=2400) *The Simpsons – Source: theverge.com*
 
 ## Description 
 
-This repository holds the code used to create a database from 4 different datasets that contain the characters, locations, episode details, and script lines for approximately 600 episodes of The Simpsons. 
+This repository holds the code used to create a database from 4 different datasets that contain the characters, locations, episode details, and script lines for approximately 600 episodes of The Simpsons. Additionally, it contains files used to query the database and create a data visualization to answer the question: **which characters have spoken the most total words, and what genders are represented among the top 12?**
 
 ## Repository Structure 
 
@@ -34,6 +33,8 @@ simpsons_database
 ├── simpsons-data-cleaning.qmd   # script used for data exploration and cleaning of tables
 |
 ├── query_simpsonsdb.qmd  # script used for querying database to create data viz
+|
+├── environment_dependencies  #  R version, operating system, & packages used 
 |
 ├── simpsons_database.Rproj   # R project 
 |
@@ -76,7 +77,11 @@ simpsons_locations <- readr::read_csv('https://raw.githubusercontent.com/rfordat
 simpsons_script_lines <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-02-04/simpsons_script_lines.csv')
 
 ```
+The code to read in this data is also located in the [readin_simp_data.R](https://github.com/jordancsibley/simpsons_database/blob/main/readin_simp_data.R) file. 
 
+## Project Dependencies & Environment
+
+To see information about the R version, operating system, and all packages used (with their versions) during the analysis of this project, see the [environment_dependencies](https://github.com/jordancsibley/simpsons_database/blob/main/environment_dependencies) file.
 
 ## Author 
 Jordan Sibley 
@@ -89,4 +94,4 @@ jordan.c.sibley@gmail.com
 
 ## Acknowledgments 
 
-The material for this assignment was presented by TA Annie Adams in the course Databases and Data Management (EDS 213) at the Bren School of Environmental Science & Management, Fall 2024. I'd also like to acknowledge the instructors of this course, Julien Brun and Greg Janée. 
+The material for this assignment was presented by TA Annie Adams in the course [Databases and Data Management (EDS 213)](https://ucsb-library-research-data-services.github.io/bren-eds213/) at the Bren School of Environmental Science & Management, Fall 2024. I'd also like to acknowledge the instructors of this course, Julien Brun and Greg Janée. 
